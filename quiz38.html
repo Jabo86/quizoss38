@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 11</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 11</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (301-330) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Cos’è la polmonite?",
+                options: ["Un’infiammazione del fegato", "Un’infezione dei polmoni", "Un blocco renale"],
+                correct: "Un’infezione dei polmoni",
+                explanation: "La polmonite è un’infezione dei polmoni, spesso causata da batteri, virus o funghi, con sintomi come febbre, tosse e dispnea. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la temperatura, la respirazione e garantire una posizione semi-seduta per facilitare la respirazione."
+            },
+            {
+                question: "Quale è un segno tipico della polmonite?",
+                options: ["Ittero", "Tosse produttiva", "Poliuria"],
+                correct: "Tosse produttiva",
+                explanation: "La tosse produttiva, spesso con espettorato, è un segno tipico della polmonite, accompagnata da febbre e dispnea. L’ittero e la poliuria non sono correlati. Gli OSS devono osservare la tosse, monitorare la saturazione di ossigeno e segnalare sintomi respiratori."
+            },
+            {
+                question: "Cos’è la broncopneumopatia cronica ostruttiva (BPCO)?",
+                options: ["Un’infiammazione della vescica", "Una malattia polmonare cronica ostruttiva", "Un accumulo di liquido nei polmoni"],
+                correct: "Una malattia polmonare cronica ostruttiva",
+                explanation: "La BPCO è una malattia polmonare cronica caratterizzata da ostruzione delle vie aeree, spesso causata da fumo, con sintomi come dispnea e tosse cronica. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare la respirazione, somministrare ossigeno se prescritto e segnalare peggioramenti."
+            },
+            {
+                question: "Quale è un segno tipico della BPCO?",
+                options: ["Dispnea da sforzo", "Ittero", "Oliguria"],
+                correct: "Dispnea da sforzo",
+                explanation: "La dispnea da sforzo, dovuta all’ostruzione delle vie aeree, è un segno tipico della BPCO, spesso accompagnata da tosse cronica. L’ittero e l’oliguria non sono correlati. Gli OSS devono aiutare il paziente a mantenere una posizione confortevole e segnalare cali nella saturazione di ossigeno."
+            },
+            {
+                question: "Cos’è l’asma?",
+                options: ["Un’infiammazione del fegato", "Una malattia respiratoria con broncocostrizione", "Un blocco renale"],
+                correct: "Una malattia respiratoria con broncocostrizione",
+                explanation: "L’asma è una malattia respiratoria cronica caratterizzata da broncocostrizione e infiammazione delle vie aeree, con sintomi come sibilo e dispnea. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare le crisi asmatiche, somministrare broncodilatatori se prescritti e segnalare difficoltà respiratorie."
+            },
+            {
+                question: "Quale è un segno tipico dell’asma?",
+                options: ["Sibilo respiratorio", "Poliuria", "Ittero"],
+                correct: "Sibilo respiratorio",
+                explanation: "Il sibilo respiratorio, un suono acuto durante l’espirazione, è un segno tipico dell’asma, dovuto alla broncocostrizione. La poliuria e l’ittero non sono correlati. Gli OSS devono monitorare la respirazione, garantire un ambiente privo di allergeni e segnalare crisi asmatiche."
+            },
+            {
+                question: "Cos’è la tubercolosi?",
+                options: ["Un’infezione polmonare batterica", "Un’infiammazione della vescica", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’infezione polmonare batterica",
+                explanation: "La tubercolosi è un’infezione polmonare causata da Mycobacterium tuberculosis, con sintomi come tosse persistente, febbre e sudorazione notturna. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono utilizzare dispositivi di protezione (es. mascherine) e monitorare i sintomi, segnalando complicanze."
+            },
+            {
+                question: "Quale è un segno tipico della tubercolosi?",
+                options: ["Tosse persistente", "Oliguria", "Ittero"],
+                correct: "Tosse persistente",
+                explanation: "La tosse persistente, spesso con espettorato o emottisi, è un segno tipico della tubercolosi polmonare. L’oliguria e l’ittero non sono correlati. Gli OSS devono monitorare la tosse, garantire l’isolamento se necessario e segnalare sintomi sospetti."
+            },
+            {
+                question: "Cos’è l’edema polmonare?",
+                options: ["Un’infiammazione del fegato", "Un accumulo di liquido negli alveoli polmonari", "Un blocco renale"],
+                correct: "Un accumulo di liquido negli alveoli polmonari",
+                explanation: "L’edema polmonare è un accumulo di liquido negli alveoli polmonari, spesso causato da insufficienza cardiaca sinistra, con sintomi come dispnea grave e rantoli. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono segnalare immediatamente la dispnea, somministrare ossigeno e posizionare il paziente in Fowler."
+            },
+            {
+                question: "Quale è un segno tipico dell’edema polmonare?",
+                options: ["Rantoli umidi", "Poliuria", "Ittero"],
+                correct: "Rantoli umidi",
+                explanation: "I rantoli umidi, suoni respiratori causati dal liquido negli alveoli, sono un segno tipico dell’edema polmonare. La poliuria e l’ittero non sono correlati. Gli OSS devono monitorare la respirazione, garantire ossigenazione e segnalare sintomi acuti."
+            },
+            {
+                question: "Cos’è il pneumotorace?",
+                options: ["Un’infiammazione della vescica", "Un collasso polmonare da aria nella pleura", "Un accumulo di liquido nei polmoni"],
+                correct: "Un collasso polmonare da aria nella pleura",
+                explanation: "Il pneumotorace è un collasso polmonare causato dall’ingresso di aria nella cavità pleurica, con sintomi come dolore toracico acuto e dispnea. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono segnalare immediatamente la dispnea e garantire ossigeno."
+            },
+            {
+                question: "Quale è un segno tipico del pneumotorace?",
+                options: ["Dolore toracico acuto", "Oliguria", "Ittero"],
+                correct: "Dolore toracico acuto",
+                explanation: "Il dolore toracico acuto, spesso unilaterale, è un segno tipico del pneumotorace, accompagnato da dispnea. L’oliguria e l’ittero non sono correlati. Gli OSS devono monitorare la respirazione, evitare movimenti bruschi e segnalare sintomi sospetti."
+            },
+            {
+                question: "Cos’è l’enfisema polmonare?",
+                options: ["Un’infiammazione del fegato", "Una distruzione degli alveoli polmonari", "Un blocco renale"],
+                correct: "Una distruzione degli alveoli polmonari",
+                explanation: "L’enfisema polmonare è una condizione cronica caratterizzata dalla distruzione degli alveoli, spesso causata da fumo, con sintomi come dispnea e torace a botte. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la saturazione e segnalare peggioramenti respiratori."
+            },
+            {
+                question: "Quale è un segno tipico dell’enfisema polmonare?",
+                options: ["Torace a botte", "Poliuria", "Ittero"],
+                correct: "Torace a botte",
+                explanation: "Il torace a botte, dovuto all’iperinflazione polmonare, è un segno tipico dell’enfisema. La poliuria e l’ittero non sono correlati. Gli OSS devono aiutare il paziente a mantenere una posizione confortevole e segnalare cali nella saturazione di ossigeno."
+            },
+            {
+                question: "Cos’è la pleurite?",
+                options: ["Un’infiammazione della pleura", "Un’infiammazione della vescica", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’infiammazione della pleura",
+                explanation: "La pleurite è un’infiammazione della pleura, spesso causata da infezioni o malattie autoimmuni, con sintomi come dolore toracico pleuritico. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare il dolore, garantire il riposo e segnalare febbre o dispnea."
+            },
+            {
+                question: "Quale è un segno tipico della pleurite?",
+                options: ["Dolore toracico pleuritico", "Oliguria", "Ittero"],
+                correct: "Dolore toracico pleuritico",
+                explanation: "Il dolore toracico pleuritico, che peggiora con la respirazione, è un segno tipico della pleurite. L’oliguria e l’ittero non sono correlati. Gli OSS devono monitorare il dolore, evitare movimenti bruschi e segnalare sintomi respiratori."
+            },
+            {
+                question: "Cos’è l’insufficienza respiratoria?",
+                options: ["Un’infiammazione del fegato", "Una ridotta ossigenazione o eliminazione di CO2", "Un blocco renale"],
+                correct: "Una ridotta ossigenazione o eliminazione di CO2",
+                explanation: "L’insufficienza respiratoria è una condizione in cui i polmoni non forniscono abbastanza ossigeno o non eliminano adeguatamente CO2, con sintomi come dispnea e cianosi. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la saturazione, somministrare ossigeno e segnalare sintomi acuti."
+            },
+            {
+                question: "Quale è un segno tipico dell’insufficienza respiratoria?",
+                options: ["Cianosi", "Poliuria", "Ittero"],
+                correct: "Cianosi",
+                explanation: "La cianosi, ovvero la colorazione bluastra di pelle e mucose, è un segno tipico dell’insufficienza respiratoria, dovuta a ipossiemia. La poliuria e l’ittero non sono correlati. Gli OSS devono monitorare la saturazione di ossigeno e segnalare immediatamente la cianosi."
+            },
+            {
+                question: "Cos’è l’apnea notturna?",
+                options: ["Un’infiammazione della vescica", "Una pausa respiratoria durante il sonno", "Un accumulo di liquido nei polmoni"],
+                correct: "Una pausa respiratoria durante il sonno",
+                explanation: "L’apnea notturna è una condizione caratterizzata da pause respiratorie durante il sonno, spesso dovuta a ostruzione delle vie aeree, con sintomi come russamento e sonnolenza diurna. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare il sonno e segnalare sintomi."
+            },
+            {
+                question: "Quale è un segno tipico dell’apnea notturna?",
+                options: ["Sonnolenza diurna", "Oliguria", "Ittero"],
+                correct: "Sonnolenza diurna",
+                explanation: "La sonnolenza diurna, dovuta a interruzioni del sonno, è un segno tipico dell’apnea notturna. L’oliguria e l’ittero non sono correlati. Gli OSS devono osservare i pazienti per russamento o pause respiratorie e segnalare sintomi sospetti."
+            },
+            {
+                question: "Cos’è la fibrosi polmonare?",
+                options: ["Un’infiammazione del fegato", "Una cicatrizzazione progressiva dei polmoni", "Un blocco renale"],
+                correct: "Una cicatrizzazione progressiva dei polmoni",
+                explanation: "La fibrosi polmonare è una malattia cronica caratterizzata dalla cicatrizzazione del tessuto polmonare, con sintomi come dispnea e tosse secca. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la respirazione, somministrare ossigeno se prescritto e segnalare peggioramenti."
+            },
+            {
+                question: "Quale è un segno tipico della fibrosi polmonare?",
+                options: ["Tosse secca", "Poliuria", "Ittero"],
+                correct: "Tosse secca",
+                explanation: "La tosse secca, spesso accompagnata da dispnea, è un segno tipico della fibrosi polmonare. La poliuria e l’ittero non sono correlati. Gli OSS devono monitorare la saturazione di ossigeno e segnalare sintomi respiratori persistenti."
+            },
+            {
+                question: "Cos’è l’embolia polmonare?",
+                options: ["Un’infiammazione della vescica", "Un’ostruzione di un’arteria polmonare", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’ostruzione di un’arteria polmonare",
+                explanation: "L’embolia polmonare è l’ostruzione di un’arteria polmonare, spesso da un coagulo, con sintomi come dispnea acuta e dolore toracico. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono segnalare immediatamente la dispnea e garantire ossigeno."
+            },
+            {
+                question: "Cos’è la broncopolmonite?",
+                options: ["Un’infiammazione del fegato", "Un’infezione dei bronchi e alveoli", "Un blocco renale"],
+                correct: "Un’infezione dei bronchi e alveoli",
+                explanation: "La broncopolmonite è un’infezione che coinvolge bronchi e alveoli, spesso causata da batteri o virus, con sintomi come febbre e tosse. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare la temperatura e la respirazione, segnalando sintomi gravi."
+            },
+            {
+                question: "Cos’è la bronchite?",
+                options: ["Un’infiammazione dei bronchi", "Un’infiammazione della vescica", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’infiammazione dei bronchi",
+                explanation: "La bronchite è un’infiammazione dei bronchi, spesso causata da virus o fumo, con sintomi come tosse e espettorato. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono monitorare la tosse, garantire idratazione e segnalare sintomi persistenti."
+            },
+            {
+                question: "Quale è un segno tipico della bronchite?",
+                options: ["Tosse con espettorato", "Poliuria", "Ittero"],
+                correct: "Tosse con espettorato",
+                explanation: "La tosse con espettorato è un segno tipico della bronchite, spesso accompagnata da febbre lieve. La poliuria e l’ittero non sono correlati. Gli OSS devono osservare la tosse, promuovere l’idratazione e segnalare sintomi respiratori prolungati."
+            },
+            {
+                question: "Cos’è l’ossigenoterapia?",
+                options: ["Un trattamento con antibiotici", "La somministrazione di ossigeno per migliorare l’ossigenazione", "Un trattamento per la pressione"],
+                correct: "La somministrazione di ossigeno per migliorare l’ossigenazione",
+                explanation: "L’ossigenoterapia è la somministrazione di ossigeno tramite maschera o cannula nasale per migliorare l’ossigenazione nei pazienti con ipossiemia. Non è un trattamento antibiotico né per la pressione. Gli OSS devono monitorare la saturazione, regolare il flusso di ossigeno e garantire la sicurezza del dispositivo."
+            },
+            {
+                question: "Quale strumento si usa per monitorare l’efficacia dell’ossigenoterapia?",
+                options: ["Sfigmomanometro", "Pulsossimetro", "Glucometro"],
+                correct: "Pulsossimetro",
+                explanation: "Il pulsossimetro misura la saturazione di ossigeno (SpO2) e la frequenza cardiaca, ed è usato per monitorare l’efficacia dell’ossigenoterapia. Lo sfigmomanometro misura la pressione, e il glucometro la glicemia. Gli OSS devono utilizzare il pulsossimetro correttamente e segnalare valori bassi."
+            },
+            {
+                question: "Cos’è la ventilazione meccanica?",
+                options: ["Un’infiammazione del fegato", "Un supporto respiratorio tramite un ventilatore", "Un blocco renale"],
+                correct: "Un supporto respiratorio tramite un ventilatore",
+                explanation: "La ventilazione meccanica è un supporto respiratorio fornito da un ventilatore per pazienti con insufficienza respiratoria grave. Non è un’infiammazione del fegato né un blocco renale. Gli OSS devono monitorare il paziente, garantire l’igiene delle vie aeree e segnalare anomalie."
+            },
+            {
+                question: "Quale è una complicanza della ventilazione meccanica?",
+                options: ["Infezione polmonare", "Poliuria", "Ittero"],
+                correct: "Infezione polmonare",
+                explanation: "Le infezioni polmonari, come la polmonite associata alla ventilazione, sono una complicanza comune della ventilazione meccanica. La poliuria e l’ittero non sono correlati. Gli OSS devono garantire l’igiene del circuito e segnalare segni di infezione come febbre o secrezioni."
+            },
+            {
+                question: "Cos’è la tracheostomia?",
+                options: ["Un’infiammazione della vescica", "Un’apertura chirurgica nella trachea", "Un accumulo di liquido nei polmoni"],
+                correct: "Un’apertura chirurgica nella trachea",
+                explanation: "La tracheostomia è un’apertura chirurgica nella trachea per facilitare la respirazione in pazienti con ostruzioni o necessità di ventilazione prolungata. Non è un’infiammazione della vescica né un edema polmonare. Gli OSS devono pulire la cannula con tecniche asettiche e segnalare ostruzioni."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
